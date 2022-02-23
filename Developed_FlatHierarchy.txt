@@ -1,0 +1,79 @@
+Sub Hierarchy_Creator()
+
+Dim Root As Range
+Dim cnt_row As Integer
+Dim cnt_col As Integer
+Dim Data_Sheet As String
+Dim newSheetName As String
+Dim checkSheetName As String
+
+'sets the inital point as the root of the function
+Set Root = Selection
+Data_Sheet = ActiveSheet.Name
+
+'Creates a new sheet called hierarchy if there isn't already one
+'Updateby Extendoffice
+    newSheetName = Application.InputBox("Input Sheet Name:", "Creates Flat Hierarchy", _
+                                    "Hierarchy", , , , , 2)
+    On Error Resume Next
+    checkSheetName = Worksheets(newSheetName).Name
+    If checkSheetName = "" Then
+        Worksheets.Add.Name = newSheetName
+        Range("A1").Select
+        ActiveCell.FormulaR1C1 = "Parent"
+        Range("B1").Select
+        ActiveCell.FormulaR1C1 = "Child"
+        Range("C7").Select
+        'adjusts the column size to fit data better
+        Columns("A:A").EntireColumn.ColumnWidth = 35
+        Columns("B:B").EntireColumn.ColumnWidth = 35
+            ActiveSheet.ListObjects.Add(xlSrcRange, Range("$A$1:$B$734"), , xlYes).Name = _
+        "HierarchyTable"
+    Else
+        MsgBox "The sheet named ''" & newSheetName & _
+        "'' exist in this workbook.", vbInformation, "Creates Flat Hierarchy"
+    End If
+    
+
+'selects the starting cell again
+Sheets(Data_Sheet).Select
+Root.Select
+
+'Counts all rows which are filled
+cnt_row = Cells.SpecialCells(xlCellTypeLastCell).Row
+
+cnt_col = Cells.SpecialCells(xlCellTypeLastCell).Column
+
+
+For i = 1 To cnt_row
+
+If ActiveCell.Value = "" Then
+Worksheets(newSheetName).Range("B" & i + 1).Value = Selection.End(xlToRight).Value
+Selection.End(xlToRight).Select
+Else
+Worksheets(newSheetName).Range("B" & i + 1).Value = ActiveCell.Value
+End If
+'Finding the Parent Key
+If ActiveCell.Column = Root.Column Then
+'If Application.ActiveCell = startpos Then
+Worksheets(newSheetName).Range("A" & i + 1).Value = ""
+Else
+ActiveCell.offset(0, -1).Select
+Worksheets(newSheetName).Range("A" & i + 1).Value = Selection.End(xlUp).Value
+End If
+
+ActiveCell.End(xlToLeft).Select
+ActiveCell.offset(1, 0).Select
+Next i
+
+Worksheets(newSheetName).Range("F1").Value = "Number of elements"
+Worksheets(newSheetName).Range("F2").Value = cnt_row
+
+Worksheets(newSheetName).Range("G1").Value = "Number of level"
+Worksheets(newSheetName).Range("G2").Value = cnt_col
+
+Worksheets(newSheetName).Range("A1").Select
+Columns("F:F").EntireColumn.EntireColumn.AutoFit
+Columns("G:G").EntireColumn.EntireColumn.AutoFit
+
+End Sub

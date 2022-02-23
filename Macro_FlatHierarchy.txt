@@ -1,0 +1,36 @@
+Sub copy()
+
+Dim Root As String
+Dim lastcell As Integer
+Dim nonhier As String
+Dim startpos As Range
+
+Set startpos = Selection
+nonhier = ActiveSheet.Name
+Root = startpos.Value
+    
+
+lastcell = 500
+
+
+For i = 1 To lastcell
+
+If ActiveCell.Value = "" Then
+Worksheets("Hierarchy").Range("B" & i + 1).Value = Selection.End(xlToRight).Value
+Selection.End(xlToRight).Select
+Else
+Worksheets("Hierarchy").Range("B" & i + 1).Value = ActiveCell.Value
+End If
+'Finding the Parent Key
+If ActiveCell.Value = Root Then
+'If Application.ActiveCell = startpos Then
+Worksheets("Hierarchy").Range("A" & i + 1).Value = ActiveCell.Value
+Else
+ActiveCell.offset(0, -1).Select
+Worksheets("Hierarchy").Range("A" & i + 1).Value = Selection.End(xlUp).Value
+End If
+
+ActiveCell.End(xlToLeft).Select
+ActiveCell.offset(1, 0).Select
+Next i
+End Sub

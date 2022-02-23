@@ -1,0 +1,37 @@
+Private Sub Worksheet_Change(ByVal Target As Range)
+
+' To allow multiple selections in a Drop Down List in Excel (without repetition)
+Dim Oldvalue As String
+Dim Newvalue As String
+Application.EnableEvents = True
+On Error GoTo Exitsub
+If Target.Address = "$D$4" Then
+  If Target.SpecialCells(xlCellTypeAllValidation) Is Nothing Then
+    GoTo Exitsub
+  Else: If Target.Value = "" Then GoTo Exitsub Else
+    Application.EnableEvents = False
+    Newvalue = Target.Value
+    Application.Undo
+    Oldvalue = Target.Value
+      If Oldvalue = "" Then
+        Target.Value = Newvalue
+      Else
+      'This checks if the value has been previously selected and if so will then delete the value.
+        Used1 = InStr(1, Oldvalue, Newvalue)
+        If Used1 > 0 Then
+            If Right(Oldvalue, Len(Newvalue)) = Newvalue Then
+            Target.Value = Left(Oldvalue, Len(Oldvalue) - Len(Newvalue & ", "))
+            Else
+                Target.Value = Replace(Oldvalue, Newvalue & ", ", "")
+            End If
+        Else
+            Target.Value = Oldvalue _
+            & ", " & Newvalue
+        End If
+       End If
+    End If
+  End If
+
+Exitsub:
+Application.EnableEvents = True
+End Sub
