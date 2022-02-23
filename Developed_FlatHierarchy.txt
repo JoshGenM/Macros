@@ -1,5 +1,5 @@
 Sub Hierarchy_Creator()
-
+'These are the variables that are used within the fucntion
 Dim Root As Range
 Dim cnt_row As Integer
 Dim cnt_col As Integer
@@ -11,7 +11,7 @@ Dim checkSheetName As String
 Set Root = Selection
 Data_Sheet = ActiveSheet.Name
 
-'Creates a new sheet called hierarchy if there isn't already one
+'Creates a new sheet default called hierarchy or the user is able to type into the box a different name
 'Updateby Extendoffice
     newSheetName = Application.InputBox("Input Sheet Name:", "Creates Flat Hierarchy", _
                                     "Hierarchy", , , , , 2)
@@ -27,7 +27,7 @@ Data_Sheet = ActiveSheet.Name
         'adjusts the column size to fit data better
         Columns("A:A").EntireColumn.ColumnWidth = 35
         Columns("B:B").EntireColumn.ColumnWidth = 35
-            ActiveSheet.ListObjects.Add(xlSrcRange, Range("$A$1:$B$734"), , xlYes).Name = _
+            ActiveSheet.ListObjects.Add(xlSrcRange, Range("$A$1:$B$2"), , xlYes).Name = _
         "HierarchyTable"
     Else
         MsgBox "The sheet named ''" & newSheetName & _
@@ -35,7 +35,7 @@ Data_Sheet = ActiveSheet.Name
     End If
     
 
-'selects the starting cell again
+'selects the data sheet and the starting cell again
 Sheets(Data_Sheet).Select
 Root.Select
 
@@ -44,7 +44,7 @@ cnt_row = Cells.SpecialCells(xlCellTypeLastCell).Row
 
 cnt_col = Cells.SpecialCells(xlCellTypeLastCell).Column
 
-
+'This is the loop function which will go down from the first row to the last row which is determined by the count Row
 For i = 1 To cnt_row
 
 If ActiveCell.Value = "" Then
@@ -66,6 +66,7 @@ ActiveCell.End(xlToLeft).Select
 ActiveCell.offset(1, 0).Select
 Next i
 
+'This is an additional part which will be added to the new sheet and add the count of the columns and rows from the data sheet
 Worksheets(newSheetName).Range("F1").Value = "Number of elements"
 Worksheets(newSheetName).Range("F2").Value = cnt_row
 
